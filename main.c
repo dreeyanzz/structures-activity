@@ -8,7 +8,6 @@
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
 void printBorder();
-Machine *createTestMachine();
 
 int main(int argc, char *argv[])
 {
@@ -38,13 +37,17 @@ int main(int argc, char *argv[])
 		switch (choice)
 		{
 		case 1:
-		{	
-			printf("Machine values has been reset.\n");
+		{
+			free(machine);
 			machine = NULL;
-		
-			printf("Initializing machine\n");	
+			printf("Machine values has been reset.\n");
+
+			printf("Initializing machine\n");
 			machine = initMachine();
-			printf("Machine initialized.\n");
+			if (machine != NULL)
+				printf("Machine initialized.\n");
+			else
+				printf("Machine initialization failed.\n");
 		}
 		break;
 
@@ -108,34 +111,3 @@ void printBorder()
 		printf("-");
 }
 
-Machine *createTestMachine()
-{
-	Machine *machine = malloc(sizeof(Machine));
-	if (machine == NULL)
-		return NULL;
-
-	Specifications macSpec = (Specifications){
-		.voltage = 220.0f,
-		.current = 15.5f,
-	};
-
-	Motor macMotor;
-	strncpy(macMotor.model, "ABB M3AA 180", 100);
-	macMotor.specs = macSpec;
-
-	Sensor macSensor = (Sensor){
-		.currentReading = 45.7f,
-		.minAllowRange = 20.0f,
-		.maxAllowRange = 80.0f,
-	};
-	strncpy(macSensor.sensorType, "Temperature", 100);
-
-	*machine = (Machine){
-		.id = 1,
-		.motor = macMotor,
-		.sensor = macSensor,
-	};
-	strncpy(machine->name, "Test Machine 1", 100);
-
-	return machine;
-}

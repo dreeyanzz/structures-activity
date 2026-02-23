@@ -47,19 +47,20 @@ int classifyPowerLevel(float powerVal)
 
     if (powerVal < (float)500)
         level = 1; // LOW
-    else if (powerVal >= (float)500 && powerVal <= (float)1500)
+    else if (powerVal <= (float)1500)
         level = 2; // NORMAL
-    else if (powerVal > (float)1500)
+    else
         level = 3; // HIGH
 
     return level;
 }
 
-void updateSensorReading(Machine *machine, float *reading)
+void updateSensorReading(Machine *machine, float reading)
 {
 	if(machine == NULL){
 		printf("Machine has not yet been initialized.\n");
+		return;
 	}
-	
-    machine->sensor.currentReading = *reading;
+
+    machine->sensor.currentReading = reading;
 }

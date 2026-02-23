@@ -8,6 +8,11 @@
 Machine *initMachine()
 {
     Machine *machine = malloc(sizeof(Machine));
+    if (machine == NULL)
+    {
+        printf("Memory allocation failed.\n");
+        return NULL;
+    }
 
     // --Machine struct--
     char macName[100];
@@ -144,13 +149,13 @@ void _classifyPowerLevel(Machine *mac)
     switch (level)
     {
     case 1:
-        levelStr = "LOW";
+        levelStr = "LOW POWER";
         break;
     case 2:
-        levelStr = "NORMAL";
+        levelStr = "NORMAL POWER";
         break;
     case 3:
-        levelStr = "HIGH";
+        levelStr = "HIGH POWER";
         break;
     default:
         levelStr = "UNKNOWN";
@@ -193,7 +198,8 @@ void _updateSensorReading(Machine *mac){
 	
 	float sensorReading;
 	printf("Enter sensor reading: "); scanf("%f", &sensorReading);
-	updateSensorReading(mac, &sensorReading);
-	
+	updateSensorReading(mac, sensorReading);
+
 	printf("Updated sensor reading to %.2f\n", sensorReading);
+	evalSensorReading(mac);
 }
