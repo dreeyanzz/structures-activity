@@ -8,5 +8,6 @@ Machine *initMachine();
 void displayMachineInfo(Machine *mac);
 void computeMotorPower(Machine *mac);
 void _classifyPowerLevel(Machine *mac);
+void evalSensorReading(Machine *mac);
 
 #endif

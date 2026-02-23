@@ -25,8 +25,9 @@ int main(int argc, char *argv[])
 		printf("  2. Compute motor power\n");
 		printf("  3. Classify power level\n");
 		printf("  4. Evaluate sensor status\n");
-		printf("  5. Evaluate sensor status\n");
+		printf("  5. Update sensor reading\n");
 		printf("  6. Display all information in a structured format\n");
+		printf("  7. Exit\n");
 		printf("\n");
 
 		printf("\nChoice: ");
@@ -37,45 +38,59 @@ int main(int argc, char *argv[])
 		switch (choice)
 		{
 		case 1:
-		{
-			printf("You have chosen %d\n", choice);
-			machine = createTestMachine();
-			printf("Test machine created with predefined values.\n");
+		{	
+			printf("Machine values has been reset.\n");
+			machine = NULL;
+		
+			printf("Initializing machine\n");	
+			machine = initMachine();
+			printf("Machine initialized.\n");
 		}
 		break;
 
 		case 2:
 		{
-			printf("You have chosen %d\n", choice);
+			printf("Computing motor power\n");
 			computeMotorPower(machine);
 		}
 		break;
 
 		case 3:
 		{
-			printf("You have chosen %d\n", choice);
+			printf("Classifying power level\n");
 			_classifyPowerLevel(machine);
 		}
 		break;
 
 		case 4:
 		{
-			printf("You have chosen %d\n", choice);
+			printf("Evaluating sensor reading\n");
+			evalSensorReading(machine);
 		}
 		break;
 
 		case 5:
 		{
-			printf("You have chosen %d\n", choice);
+			printf("Updating sensor reading\n");
+			_updateSensorReading(machine);
 		}
 		break;
 
 		case 6:
 		{
-			printf("You have chosen %d\n", choice);
+			printf("Machine info:\n");
 			displayMachineInfo(machine);
 		}
 		break;
+		
+		case 7:
+		{
+			printf("Exiting...\n");
+			free(machine);
+			exit(0);
+		}
+		break;
+		
 
 		default:
 			printf("Invalid choice");

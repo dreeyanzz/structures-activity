@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "functions.h"
 #include "structures.h"
 #include "machine-functions.h"
 
@@ -23,12 +24,20 @@ float computePower(Machine *machine)
 
 int checkSensorStatus(Machine *machine)
 {
+
+    if (machine == NULL)
+    {
+        printf("Machine has not yet been initialized.\n");
+        return -1;
+    }
+
     float maxAllow = machine->sensor.maxAllowRange;
     float minAllow = machine->sensor.minAllowRange;
     float currentReading = machine->sensor.currentReading;
 
     int isAllowRange = currentReading >= minAllow && currentReading <= maxAllow; // checks if `currentReading` is within range of `minAllow` and `maxAllow`
 
+	printf("Sensor allowed range: ( %.2f - %.2f )\n", minAllow, maxAllow);
     return isAllowRange;
 }
 
@@ -48,5 +57,9 @@ int classifyPowerLevel(float powerVal)
 
 void updateSensorReading(Machine *machine, float *reading)
 {
+	if(machine == NULL){
+		printf("Machine has not yet been initialized.\n");
+	}
+	
     machine->sensor.currentReading = *reading;
 }

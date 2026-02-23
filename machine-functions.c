@@ -111,8 +111,8 @@ void displayMachineInfo(Machine *mac)
     printf("|- motor\n");
     printf("|   |- model: %s\n", mac->motor.model);
     printf("|   |- specs\n");
-    printf("|       |- voltage: %.2f\n", mac->motor.specs.voltage);
-    printf("|       |- current: %.2f\n", mac->motor.specs.current);
+    printf("|       |- voltage: %.2fV\n", mac->motor.specs.voltage);
+    printf("|       |- current: %.2fA\n", mac->motor.specs.current);
     printf("|- sensor\n");
     printf("    |- type: %s\n", mac->sensor.sensorType);
     printf("    |- currentReading: %.2f\n", mac->sensor.currentReading);
@@ -127,7 +127,7 @@ void computeMotorPower(Machine *mac)
     if (power < 0)
         return;
 
-    printf("Motor Power: %.2f\n", power);
+    printf("Motor Power: %.2fW\n", power);
 }
 
 void _classifyPowerLevel(Machine *mac)
@@ -158,4 +158,42 @@ void _classifyPowerLevel(Machine *mac)
     }
 
     printf("Power Level: %s\n", levelStr);
+}
+
+void evalSensorReading(Machine *mac)
+{
+    int status = checkSensorStatus(mac);
+
+    if (status == -1)
+        return;
+
+    char *statusStr = status ? "Sensor reading is within allowed range." : "Sensor reading is outside allowed range.";
+    
+    printf("Sensor Status: %s\n", statusStr);
+}
+
+void _updateSensorReading(Machine *mac){
+	
+	if(mac == NULL){
+		printf("Machine has not yet been initialized.\n");
+		return;
+	}
+	
+	char answer[4];
+	
+	do{
+		printf("Do you want to update sensor reading? (yes or no): ");
+		scanf("%3s", answer);
+		
+		if(strcmp(answer, "yes") != 0 && strcmp(answer, "no") != 0) printf("Invalid input!\n");
+		
+	}while(strcmp(answer, "yes") != 0 && strcmp(answer, "no") != 0);
+	
+	if(strcmp(answer, "no") == 0) return;
+	
+	float sensorReading;
+	printf("Enter sensor reading: "); scanf("%f", &sensorReading);
+	updateSensorReading(mac, &sensorReading);
+	
+	printf("Updated sensor reading to %.2f\n", sensorReading);
 }
