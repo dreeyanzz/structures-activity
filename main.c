@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 			displayMachineInfo(machine);
 		}
 		break;
-		
+
 		case 7:
 		{
 			printf("Exiting...\n");
@@ -93,7 +93,6 @@ int main(int argc, char *argv[])
 			exit(0);
 		}
 		break;
-		
 
 		default:
 			printf("Invalid choice");
@@ -110,4 +109,3 @@ void printBorder()
 	for (i = 0; i < 50; i++)
 		printf("-");
 }
-

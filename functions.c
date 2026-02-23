@@ -37,7 +37,7 @@ int checkSensorStatus(Machine *machine)
 
     int isAllowRange = currentReading >= minAllow && currentReading <= maxAllow; // checks if `currentReading` is within range of `minAllow` and `maxAllow`
 
-	printf("Sensor allowed range: ( %.2f - %.2f )\n", minAllow, maxAllow);
+    printf("Sensor allowed range: ( %.2f - %.2f )\n", minAllow, maxAllow);
     return isAllowRange;
 }
 
@@ -57,10 +57,11 @@ int classifyPowerLevel(float powerVal)
 
 void updateSensorReading(Machine *machine, float reading)
 {
-	if(machine == NULL){
-		printf("Machine has not yet been initialized.\n");
-		return;
-	}
+    if (machine == NULL)
+    {
+        printf("Machine has not yet been initialized.\n");
+        return;
+    }
 
     machine->sensor.currentReading = reading;
 }
