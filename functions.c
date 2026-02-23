@@ -1,8 +1,16 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "structures.h"
 #include "machine-functions.h"
 
 float computePower(Machine *machine)
 {
+    if (machine == NULL)
+    {
+        printf("Machine has not yet been initialized.\n");
+        return -1.0f;
+    }
+
     float power;
 
     float macCurrent = machine->motor.specs.current;

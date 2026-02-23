@@ -2,15 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "structures.h"
+#include "machine-functions.h"
 #include "functions.h"
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
 void printBorder();
 Machine *createTestMachine();
-
-Machine *initMachine();
-void displayMachineInfo(Machine *mac);
 
 int main(int argc, char *argv[])
 {
@@ -42,18 +40,21 @@ int main(int argc, char *argv[])
 		{
 			printf("You have chosen %d\n", choice);
 			machine = createTestMachine();
+			printf("Test machine created with predefined values.\n");
 		}
 		break;
 
 		case 2:
 		{
 			printf("You have chosen %d\n", choice);
+			computeMotorPower(machine);
 		}
 		break;
 
 		case 3:
 		{
 			printf("You have chosen %d\n", choice);
+			_classifyPowerLevel(machine);
 		}
 		break;
 
@@ -122,123 +123,4 @@ Machine *createTestMachine()
 	strncpy(machine->name, "Test Machine 1", 100);
 
 	return machine;
-}
-
-Machine *initMachine()
-{
-	Machine *machine = malloc(sizeof(Machine));
-
-	// --Machine struct--
-	char macName[100];
-	int macId;
-
-	printf("Enter machine name (up to 99 characters): ");
-	fgets(macName, sizeof(macName), stdin);
-
-	printf("Enter machine ID: ");
-	scanf(" %d", &macId);
-	while (getchar() != '\n')
-		;
-
-	// --Motor struct--
-	char motorModel[100];
-
-	printf("Enter motor model: ");
-	fgets(motorModel, sizeof(motorModel), stdin);
-
-	// --Specifications struct--
-	float specVoltage;
-	float specCurrent;
-
-	printf("Enter voltage: ");
-	scanf(" %f", &specVoltage);
-	while (getchar() != '\n')
-		;
-
-	printf("Enter current: ");
-	scanf(" %f", &specCurrent);
-	while (getchar() != '\n')
-		;
-
-	// --Sensor struct--
-	char sensorType[100];
-	float sensorReading;
-	float sensorMinRange;
-	float sensorMaxRange;
-
-	printf("Enter sensor type: ");
-	fgets(sensorType, sizeof(sensorType), stdin);
-
-	printf("Enter sensor reading: ");
-	scanf(" %f", &sensorReading);
-	while (getchar() != '\n')
-		;
-
-	printf("Enter sensor minimum range: ");
-	scanf(" %f", &sensorMinRange);
-	while (getchar() != '\n')
-		;
-
-	printf("Enter sensor maximum range: ");
-	scanf(" %f", &sensorMaxRange);
-	while (getchar() != '\n')
-		;
-
-	Specifications macSpec = (Specifications){
-		.voltage = specVoltage,
-		.current = specCurrent,
-	};
-
-	Motor macMotor;
-	strncpy(macMotor.model, motorModel, 100);
-	macMotor.specs = macSpec;
-
-	Sensor macSensor;
-
-	macSensor = (Sensor){
-		.currentReading = sensorReading,
-		.minAllowRange = sensorMinRange,
-		.maxAllowRange = sensorMaxRange,
-	};
-	strncpy(macSensor.sensorType, sensorType, 100);
-
-	*machine = (Machine){
-		.id = macId,
-		.motor = macMotor,
-		.sensor = macSensor,
-	};
-	strncpy(machine->name, macName, 100);
-
-	return machine;
-}
-
-void displayMachineInfo(Machine *mac)
-{
-	if (mac == NULL)
-	{
-		printf("Machine has not yet been initialized.\n");
-		return;
-	}
-
-	mac->name[strcspn(mac->name, "\n")] = '\0';
-	mac->motor.model[strcspn(mac->motor.model, "\n")] = '\0';
-	mac->sensor.sensorType[strcspn(mac->sensor.sensorType, "\n")] = '\0';
-
-	printf("{\n");
-	printf("  \"name\": \"%s\",\n", mac->name);
-	printf("  \"id\": %d,\n", mac->id);
-	printf("  \"motor\": {\n");
-	printf("    \"model\": \"%s\",\n", mac->motor.model);
-	printf("    \"specs\": {\n");
-	printf("      \"voltage\": %.2f,\n", mac->motor.specs.voltage);
-	printf("      \"current\": %.2f\n", mac->motor.specs.current);
-	printf("    }\n");
-	printf("  },\n");
-	printf("  \"sensor\": {\n");
-	printf("    \"type\": \"%s\",\n", mac->sensor.sensorType);
-	printf("    \"currentReading\": %.2f,\n", mac->sensor.currentReading);
-	printf("    \"minAllowRange\": %.2f,\n", mac->sensor.minAllowRange);
-	printf("    \"maxAllowRange\": %.2f\n", mac->sensor.maxAllowRange);
-	printf("  }\n");
-	printf("}\n");
 }
