@@ -77,6 +77,7 @@ void updateSensorReading(Machine *machine, int sensorIndex, float reading)
     }
 
     machine->sensors[sensorIndex].currentReading = reading;
+    checkSensorStatus(machine, sensorIndex);
 }
 
 void displayMachineInfo(Machine *mac)
@@ -101,6 +102,28 @@ void displayMachineInfo(Machine *mac)
     printf(" |   |- specs\n");
     printf(" |       |- voltage: %.2fV\n", mac->motor.specs.voltage);
     printf(" |       |- current: %.2fA\n", mac->motor.specs.current);
+    float power = computePower(mac);
+    printf(" |- power: %.2fW\n", power);
+
+    int level = classifyPowerLevel(power);
+    char *levelStr;
+    switch (level)
+    {
+    case 1:
+        levelStr = "LOW POWER";
+        break;
+    case 2:
+        levelStr = "NORMAL POWER";
+        break;
+    case 3:
+        levelStr = "HIGH POWER";
+        break;
+    default:
+        levelStr = "UNKNOWN";
+        break;
+    }
+    printf(" |- power level: %s\n", levelStr);
+
     printf(" |- sensors (%d)\n", mac->numSensors);
     displayMachineSensors(mac);
 }
@@ -142,7 +165,7 @@ int countOutOfRangeSensors(Machine *machine)
     return count;
 }
 
-int findMachineById(Machine *machines, int numMachines, int id) // returns index of machine with matching id, or -1 if not found
+int findMachineByID(Machine *machines, int numMachines, int id) // returns index of machine with matching id, or -1 if not found
 {
     if (machines == NULL)
     {
@@ -201,24 +224,21 @@ int getHighestPowerMachine(Machine *machines, int numMachines) // returns index 
     return highestIndex;
 }
 
-void removeMachine(Machine **machines, int *numMachines, int id) // removes machine with matching id from machines array, and updates numMachines; if no machine with matching id is found or machines is not initialized, does nothing
+void removeMachine(Machine *machines, int *numMachines, int id)
 {
-    if (machines == NULL || *machines == NULL)
+    if (machines == NULL)
     {
         printf("Machines have not yet been initialized.\n");
         return;
     }
 
-    int indexToRemove = findMachineById(*machines, *numMachines, id);
+    int indexToRemove = findMachineByID(machines, *numMachines, id);
     if (indexToRemove == -1)
         return;
 
-    free((*machines)[indexToRemove].sensors);
-
     int indexMac;
     for (indexMac = indexToRemove; indexMac < *numMachines - 1; indexMac++)
-        (*machines)[indexMac] = (*machines)[indexMac + 1];
+        machines[indexMac] = machines[indexMac + 1];
 
     (*numMachines)--;
-    *machines = (Machine *)realloc(*machines, (*numMachines) * sizeof(Machine));
 }

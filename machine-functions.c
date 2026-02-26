@@ -5,120 +5,66 @@
 #include "machine-functions.h"
 #include "structures.h"
 
-Machine *initMachine()
+void initMachine(Machine *machine)
 {
-    Machine *machine = malloc(sizeof(Machine));
-    if (machine == NULL)
-    {
-        printf("Memory allocation failed.\n");
-        return NULL;
-    }
-
-    // --Machine struct--
-    char macName[100];
-    int macId;
-
     printf("Enter machine name (up to 99 characters): ");
-    fgets(macName, sizeof(macName), stdin);
+    fgets(machine->name, sizeof(machine->name), stdin);
+    machine->name[strcspn(machine->name, "\n")] = '\0';
 
     printf("Enter machine ID: ");
-    scanf(" %d", &macId);
+    scanf(" %d", &machine->id);
     while (getchar() != '\n')
         ;
 
-    // --Motor struct--
-    char motorModel[100];
-
     printf("Enter motor model: ");
-    fgets(motorModel, sizeof(motorModel), stdin);
-
-    // --Specifications struct--
-    float specVoltage;
-    float specCurrent;
+    fgets(machine->motor.model, sizeof(machine->motor.model), stdin);
+    machine->motor.model[strcspn(machine->motor.model, "\n")] = '\0';
 
     printf("Enter voltage: ");
-    scanf(" %f", &specVoltage);
+    scanf(" %f", &machine->motor.specs.voltage);
     while (getchar() != '\n')
         ;
 
     printf("Enter current: ");
-    scanf(" %f", &specCurrent);
+    scanf(" %f", &machine->motor.specs.current);
     while (getchar() != '\n')
         ;
 
-    int numSensors;
     do
     {
         printf("Enter number of sensors (0 - 5): ");
-        scanf(" %d", &numSensors);
+        scanf(" %d", &machine->numSensors);
         while (getchar() != '\n')
             ;
 
-        if (numSensors < 0 || numSensors > 5)
+        if (machine->numSensors < 0 || machine->numSensors > 5)
             printf("Invalid number of sensors! Please enter a number between 0 and 5.\n");
-    } while (numSensors < 0 || numSensors > 5);
+    } while (machine->numSensors < 0 || machine->numSensors > 5);
 
-    Sensor *sensors = (Sensor *)malloc(numSensors * sizeof(Sensor));
     int indexSen;
-    for (indexSen = 0; indexSen < numSensors; indexSen++)
+    for (indexSen = 0; indexSen < machine->numSensors; indexSen++)
     {
-
         printf("Sensor %d:\n", indexSen + 1);
 
-        // --Sensor struct--
-        char sensorType[100];
-        float sensorReading;
-        float sensorMinRange;
-        float sensorMaxRange;
-
         printf("Enter sensor type: ");
-        fgets(sensorType, sizeof(sensorType), stdin);
+        fgets(machine->sensors[indexSen].sensorType, sizeof(machine->sensors[indexSen].sensorType), stdin);
+        machine->sensors[indexSen].sensorType[strcspn(machine->sensors[indexSen].sensorType, "\n")] = '\0';
 
         printf("Enter sensor reading: ");
-        scanf(" %f", &sensorReading);
+        scanf(" %f", &machine->sensors[indexSen].currentReading);
         while (getchar() != '\n')
             ;
 
         printf("Enter sensor minimum range: ");
-        scanf(" %f", &sensorMinRange);
+        scanf(" %f", &machine->sensors[indexSen].minAllowRange);
         while (getchar() != '\n')
             ;
 
         printf("Enter sensor maximum range: ");
-        scanf(" %f", &sensorMaxRange);
+        scanf(" %f", &machine->sensors[indexSen].maxAllowRange);
         while (getchar() != '\n')
             ;
-
-        Sensor macSensor;
-        macSensor = (Sensor){
-            .currentReading = sensorReading,
-            .minAllowRange = sensorMinRange,
-            .maxAllowRange = sensorMaxRange,
-        };
-        strncpy(macSensor.sensorType, sensorType, 100);
-
-        sensors[indexSen] = macSensor;
     }
-
-    Specifications macSpec = (Specifications){
-        .voltage = specVoltage,
-        .current = specCurrent,
-    };
-
-    Motor macMotor;
-    strncpy(macMotor.model, motorModel, 100);
-    macMotor.specs = macSpec;
-
-    *machine = (Machine){
-        .id = macId,
-        .motor = macMotor,
-        // .sensor = macSensor,
-        .sensors = sensors,
-        .numSensors = numSensors,
-    };
-    strncpy(machine->name, macName, 100);
-
-    return machine;
 }
 
 void displayAllMachineInfo(Machine *macs, int numMacs)
@@ -147,6 +93,8 @@ void displayMachineSensors(Machine *mac)
         printf("     %c   |- currentReading: %.2f\n", pipe, sensor.currentReading);
         printf("     %c   |- minAllowRange: %.2f\n", pipe, sensor.minAllowRange);
         printf("     %c   |- maxAllowRange: %.2f\n", pipe, sensor.maxAllowRange);
+        int isInRange = sensor.currentReading >= sensor.minAllowRange && sensor.currentReading <= sensor.maxAllowRange;
+        printf("     %c   |- status: %s\n", pipe, isInRange ? "NORMAL" : "OUT OF RANGE");
     }
 }
 
@@ -238,5 +186,4 @@ void _updateSensorReading(Machine *mac)
     updateSensorReading(mac, sensorIndex, sensorReading);
 
     printf("Updated sensor reading to %.2f\n", sensorReading);
-    evalSensorReading(mac, sensorIndex);
 }

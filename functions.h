@@ -10,9 +10,9 @@ void updateSensorReading(Machine *machine, int sensorIndex, float reading);
 void displayMachineInfo(Machine *machine);
 float computeAverageSensorReading(Machine *machine);
 int countOutOfRangeSensors(Machine *machine);
-int findMachineById(Machine *machines, int numMachines, int id); // returns index of machine with matching id, or -1 if not found
+int findMachineByID(Machine *machines, int numMachines, int id);
 float computeTotalPowerAllMachines(Machine *machines, int numMachines);
 int getHighestPowerMachine(Machine *machines, int numMachines);
-void removeMachine(Machine **machines, int *numMachines, int id);
+void removeMachine(Machine *machines, int *numMachines, int id);
 
 #endif

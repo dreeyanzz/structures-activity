@@ -4,7 +4,7 @@
 
 #include "structures.h"
 
-Machine *initMachine();
+void initMachine(Machine *machine);
 void displayAllMachineInfo(Machine *macs, int numMacs);
 void computeMotorPower(Machine *mac);
 void _classifyPowerLevel(Machine *mac);

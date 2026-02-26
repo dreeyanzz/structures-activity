@@ -9,24 +9,24 @@
 
 void printBorder();
 
-Machine *createTestMachines(int *numMachines);
-
 int main(int argc, char *argv[])
 {
 
-	int numMachines = 3;
+	int numMachines;
 
-	// printf("Enter number of machines: ");
-	// scanf("%d", &numMachines);
+	printf("Enter number of machines: ");
+	scanf("%d", &numMachines);
+	while (getchar() != '\n')
+		;
 
-	Machine *machines = NULL;
-	// machines = (Machine *)malloc(numMachines * sizeof(Machine));
+	Machine *machines = (Machine *)malloc(numMachines * sizeof(Machine));
 
-	// int _indexMac;
-	// for (_indexMac = 0; _indexMac < numMachines; _indexMac++)
-	// 	machines[_indexMac] = *initMachine();
-
-	machines = createTestMachines(&numMachines);
+	int _indexMac;
+	for (_indexMac = 0; _indexMac < numMachines; _indexMac++)
+	{
+		printf("\n--- Machine %d ---\n", _indexMac + 1);
+		initMachine(&machines[_indexMac]);
+	}
 
 	int choice;
 	while (1)
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 			while (getchar() != '\n')
 				;
 
-			int indexMac = findMachineById(machines, numMachines, macId);
+			int indexMac = findMachineByID(machines, numMachines, macId);
 			if (indexMac == -1)
 				break;
 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 			while (getchar() != '\n')
 				;
 
-			int indexMac = findMachineById(machines, numMachines, macId);
+			int indexMac = findMachineByID(machines, numMachines, macId);
 			if (indexMac == -1)
 				break;
 
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 			while (getchar() != '\n')
 				;
 
-			int indexMac = findMachineById(machines, numMachines, macId);
+			int indexMac = findMachineByID(machines, numMachines, macId);
 			if (indexMac == -1)
 				break;
 
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 			while (getchar() != '\n')
 				;
 
-			int indexMac = findMachineById(machines, numMachines, macId);
+			int indexMac = findMachineByID(machines, numMachines, macId);
 			if (indexMac == -1)
 				break;
 
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
 			while (getchar() != '\n')
 				;
 
-			int indexMac = findMachineById(machines, numMachines, macId);
+			int indexMac = findMachineByID(machines, numMachines, macId);
 			if (indexMac == -1)
 				break;
 
@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
 			while (getchar() != '\n')
 				;
 
-			int indexMac = findMachineById(machines, numMachines, macId);
+			int indexMac = findMachineByID(machines, numMachines, macId);
 			if (indexMac == -1)
 				break;
 
@@ -223,14 +223,15 @@ int main(int argc, char *argv[])
 			while (getchar() != '\n')
 				;
 
-			removeMachine(&machines, &numMachines, macId);
+			removeMachine(machines, &numMachines, macId);
 		}
 		break;
 
 		case 11:
 		{
 			printf("Exiting...\n");
-			exit(0);
+			free(machines);
+			return 0;
 		}
 		break;
 
@@ -248,59 +249,4 @@ void printBorder()
 	int i;
 	for (i = 0; i < 50; i++)
 		printf("-");
-}
-
-Machine *createTestMachines(int *numMachines)
-{
-	*numMachines = 3;
-	Machine *machines = (Machine *)malloc(3 * sizeof(Machine));
-
-	// --- Machine 0: Conveyor Belt ---
-	strcpy(machines[0].name, "Conveyor Belt");
-	machines[0].id = 1001;
-	strcpy(machines[0].motor.model, "Siemens S1-200");
-	machines[0].motor.specs.voltage = 220.0f;
-	machines[0].motor.specs.current = 15.5f;
-	machines[0].numSensors = 2;
-	machines[0].sensors = (Sensor *)malloc(2 * sizeof(Sensor));
-	strcpy(machines[0].sensors[0].sensorType, "Temperature");
-	machines[0].sensors[0].currentReading = 75.3f;
-	machines[0].sensors[0].minAllowRange = 20.0f;
-	machines[0].sensors[0].maxAllowRange = 100.0f;
-	strcpy(machines[0].sensors[1].sensorType, "Vibration");
-	machines[0].sensors[1].currentReading = 2.1f;
-	machines[0].sensors[1].minAllowRange = 0.0f;
-	machines[0].sensors[1].maxAllowRange = 5.0f;
-
-	// --- Machine 1: Hydraulic Press ---
-	strcpy(machines[1].name, "Hydraulic Press");
-	machines[1].id = 1002;
-	strcpy(machines[1].motor.model, "ABB M3BP-180");
-	machines[1].motor.specs.voltage = 380.0f;
-	machines[1].motor.specs.current = 42.0f;
-	machines[1].numSensors = 3;
-	machines[1].sensors = (Sensor *)malloc(3 * sizeof(Sensor));
-	strcpy(machines[1].sensors[0].sensorType, "Pressure");
-	machines[1].sensors[0].currentReading = 150.0f;
-	machines[1].sensors[0].minAllowRange = 50.0f;
-	machines[1].sensors[0].maxAllowRange = 200.0f;
-	strcpy(machines[1].sensors[1].sensorType, "Temperature");
-	machines[1].sensors[1].currentReading = 60.0f;
-	machines[1].sensors[1].minAllowRange = 10.0f;
-	machines[1].sensors[1].maxAllowRange = 90.0f;
-	strcpy(machines[1].sensors[2].sensorType, "Flow Rate");
-	machines[1].sensors[2].currentReading = 12.5f;
-	machines[1].sensors[2].minAllowRange = 5.0f;
-	machines[1].sensors[2].maxAllowRange = 20.0f;
-
-	// --- Machine 2: Packaging Unit ---
-	strcpy(machines[2].name, "Packaging Unit");
-	machines[2].id = 1003;
-	strcpy(machines[2].motor.model, "WEG W22-90L");
-	machines[2].motor.specs.voltage = 110.0f;
-	machines[2].motor.specs.current = 8.0f;
-	machines[2].numSensors = 0;
-	machines[2].sensors = NULL;
-
-	return machines;
 }
