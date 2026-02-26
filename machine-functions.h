@@ -5,9 +5,10 @@
 #include "structures.h"
 
 Machine *initMachine();
-void displayMachineInfo(Machine *mac);
+void displayAllMachineInfo(Machine *macs, int numMacs);
 void computeMotorPower(Machine *mac);
 void _classifyPowerLevel(Machine *mac);
-void evalSensorReading(Machine *mac);
+void evalSensorReading(Machine *mac, int sensorIndex);
+void displayMachineSensors(Machine *mac);
 
 #endif

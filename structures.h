@@ -26,7 +26,8 @@ typedef struct Machine
     char name[100];
     int id;
     Motor motor;
-    Sensor sensor;
+    Sensor *sensors; // pointer to an array of Sensor structs
+    int numSensors;
 } Machine;
 
 #endif

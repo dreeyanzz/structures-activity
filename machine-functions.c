@@ -46,29 +46,59 @@ Machine *initMachine()
     while (getchar() != '\n')
         ;
 
-    // --Sensor struct--
-    char sensorType[100];
-    float sensorReading;
-    float sensorMinRange;
-    float sensorMaxRange;
+    int numSensors;
+    do
+    {
+        printf("Enter number of sensors (0 - 5): ");
+        scanf(" %d", &numSensors);
+        while (getchar() != '\n')
+            ;
 
-    printf("Enter sensor type: ");
-    fgets(sensorType, sizeof(sensorType), stdin);
+        if (numSensors < 0 || numSensors > 5)
+            printf("Invalid number of sensors! Please enter a number between 0 and 5.\n");
+    } while (numSensors < 0 || numSensors > 5);
 
-    printf("Enter sensor reading: ");
-    scanf(" %f", &sensorReading);
-    while (getchar() != '\n')
-        ;
+    Sensor *sensors = (Sensor *)malloc(numSensors * sizeof(Sensor));
+    int indexSen;
+    for (indexSen = 0; indexSen < numSensors; indexSen++)
+    {
 
-    printf("Enter sensor minimum range: ");
-    scanf(" %f", &sensorMinRange);
-    while (getchar() != '\n')
-        ;
+        printf("Sensor %d:\n", indexSen + 1);
 
-    printf("Enter sensor maximum range: ");
-    scanf(" %f", &sensorMaxRange);
-    while (getchar() != '\n')
-        ;
+        // --Sensor struct--
+        char sensorType[100];
+        float sensorReading;
+        float sensorMinRange;
+        float sensorMaxRange;
+
+        printf("Enter sensor type: ");
+        fgets(sensorType, sizeof(sensorType), stdin);
+
+        printf("Enter sensor reading: ");
+        scanf(" %f", &sensorReading);
+        while (getchar() != '\n')
+            ;
+
+        printf("Enter sensor minimum range: ");
+        scanf(" %f", &sensorMinRange);
+        while (getchar() != '\n')
+            ;
+
+        printf("Enter sensor maximum range: ");
+        scanf(" %f", &sensorMaxRange);
+        while (getchar() != '\n')
+            ;
+
+        Sensor macSensor;
+        macSensor = (Sensor){
+            .currentReading = sensorReading,
+            .minAllowRange = sensorMinRange,
+            .maxAllowRange = sensorMaxRange,
+        };
+        strncpy(macSensor.sensorType, sensorType, 100);
+
+        sensors[indexSen] = macSensor;
+    }
 
     Specifications macSpec = (Specifications){
         .voltage = specVoltage,
@@ -79,50 +109,45 @@ Machine *initMachine()
     strncpy(macMotor.model, motorModel, 100);
     macMotor.specs = macSpec;
 
-    Sensor macSensor;
-
-    macSensor = (Sensor){
-        .currentReading = sensorReading,
-        .minAllowRange = sensorMinRange,
-        .maxAllowRange = sensorMaxRange,
-    };
-    strncpy(macSensor.sensorType, sensorType, 100);
-
     *machine = (Machine){
         .id = macId,
         .motor = macMotor,
-        .sensor = macSensor,
+        // .sensor = macSensor,
+        .sensors = sensors,
+        .numSensors = numSensors,
     };
     strncpy(machine->name, macName, 100);
 
     return machine;
 }
 
-void displayMachineInfo(Machine *mac)
+void displayAllMachineInfo(Machine *macs, int numMacs)
 {
-    if (mac == NULL)
+    int indexMac;
+    for (indexMac = 0; indexMac < numMacs; indexMac++)
     {
-        printf("Machine has not yet been initialized.\n");
-        return;
+        printf("Machine %d:\n", indexMac + 1);
+        displayMachineInfo(&macs[indexMac]);
+        printf("\n");
     }
+}
 
-    mac->name[strcspn(mac->name, "\n")] = '\0';
-    mac->motor.model[strcspn(mac->motor.model, "\n")] = '\0';
-    mac->sensor.sensorType[strcspn(mac->sensor.sensorType, "\n")] = '\0';
+void displayMachineSensors(Machine *mac)
+{
+    const int numSensors = mac->numSensors;
 
-    printf("Machine\n");
-    printf("|- name: %s\n", mac->name);
-    printf("|- id: %d\n", mac->id);
-    printf("|- motor\n");
-    printf("|   |- model: %s\n", mac->motor.model);
-    printf("|   |- specs\n");
-    printf("|       |- voltage: %.2fV\n", mac->motor.specs.voltage);
-    printf("|       |- current: %.2fA\n", mac->motor.specs.current);
-    printf("|- sensor\n");
-    printf("    |- type: %s\n", mac->sensor.sensorType);
-    printf("    |- currentReading: %.2f\n", mac->sensor.currentReading);
-    printf("    |- minAllowRange: %.2f\n", mac->sensor.minAllowRange);
-    printf("    |- maxAllowRange: %.2f\n", mac->sensor.maxAllowRange);
+    int indexSen;
+    for (indexSen = 0; indexSen < numSensors; indexSen++)
+    {
+        char pipe = indexSen == numSensors - 1 ? ' ' : '|';
+
+        Sensor sensor = mac->sensors[indexSen];
+        printf("     |- Sensor %d:\n", indexSen + 1);
+        printf("     %c   |- type: %s\n", pipe, sensor.sensorType);
+        printf("     %c   |- currentReading: %.2f\n", pipe, sensor.currentReading);
+        printf("     %c   |- minAllowRange: %.2f\n", pipe, sensor.minAllowRange);
+        printf("     %c   |- maxAllowRange: %.2f\n", pipe, sensor.maxAllowRange);
+    }
 }
 
 void computeMotorPower(Machine *mac)
@@ -165,9 +190,9 @@ void _classifyPowerLevel(Machine *mac)
     printf("Power Level: %s\n", levelStr);
 }
 
-void evalSensorReading(Machine *mac)
+void evalSensorReading(Machine *mac, int sensorIndex)
 {
-    int status = checkSensorStatus(mac);
+    int status = checkSensorStatus(mac, sensorIndex);
 
     if (status == -1)
         return;
@@ -201,11 +226,17 @@ void _updateSensorReading(Machine *mac)
     if (strcmp(answer, "no") == 0)
         return;
 
+    printf("Select sensor index to update (0 - %d): ", mac->numSensors - 1);
+    int sensorIndex;
+    scanf(" %d", &sensorIndex);
+    while (getchar() != '\n')
+        ;
+
     float sensorReading;
     printf("Enter sensor reading: ");
     scanf("%f", &sensorReading);
-    updateSensorReading(mac, sensorReading);
+    updateSensorReading(mac, sensorIndex, sensorReading);
 
     printf("Updated sensor reading to %.2f\n", sensorReading);
-    evalSensorReading(mac);
+    evalSensorReading(mac, sensorIndex);
 }
